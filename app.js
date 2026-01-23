@@ -1,64 +1,46 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
+const board = document.getElementById('board');
+const playBtn = document.getElementById('play');
+const trapsLabel = document.getElementById('traps');
+const prev = document.getElementById('prev');
+const next = document.getElementById('next');
 
-const GRID_SIZE = 5;
-const STAR_COUNT = 4;
-const modes = [3, 5, 7];
-let modeIndex = 0;
-let wins = 0;
 
-const grid = document.getElementById('grid');
-const signalBtn = document.getElementById('signal');
-const modeLabel = document.getElementById('mode');
-const winsLabel = document.getElementById('wins');
+let traps = [3,5,7];
+let index = 0;
 
-let cells = [];
 
-function buildGrid() {
-  grid.innerHTML = '';
-  cells = [];
-  for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'cell';
-    grid.appendChild(cell);
-    cells.push(cell);
-  }
+for (let i = 0; i < 25; i++) {
+const cell = document.createElement('div');
+cell.className = 'cell';
+board.appendChild(cell);
 }
 
-function generateSignal() {
-  signalBtn.disabled = true;
-  signalBtn.textContent = 'ANALYZING…';
 
-  cells.forEach(c => c.textContent = '');
-
-  setTimeout(() => {
-    const indices = [...Array(25).keys()];
-    const mines = shuffle(indices).slice(0, modes[modeIndex]);
-    const safe = indices.filter(i => !mines.includes(i));
-
-    shuffle(safe).slice(0, STAR_COUNT).forEach(i => {
-      cells[i].textContent = '★';
-    });
-
-    signalBtn.textContent = 'GET SIGNAL';
-    signalBtn.disabled = false;
-  }, 1200);
+function clearBoard() {
+document.querySelectorAll('.cell').forEach(c => c.classList.remove('star'));
 }
 
-function shuffle(arr) {
-  return arr.sort(() => Math.random() - 0.5);
+
+function placeStars(count) {
+const cells = [...document.querySelectorAll('.cell')];
+const shuffled = cells.sort(() => 0.5 - Math.random());
+shuffled.slice(0, count).forEach(c => c.classList.add('star'));
 }
 
-document.getElementById('plus').onclick = () => {
-  modeIndex = (modeIndex + 1) % modes.length;
-  modeLabel.textContent = modes[modeIndex];
+
+playBtn.onclick = () => {
+clearBoard();
+placeStars(4);
 };
 
-document.getElementById('minus').onclick = () => {
-  modeIndex = (modeIndex - 1 + modes.length) % modes.length;
-  modeLabel.textContent = modes[modeIndex];
+
+prev.onclick = () => {
+index = (index - 1 + traps.length) % traps.length;
+trapsLabel.textContent = traps[index] + ' traps';
 };
 
-signalBtn.onclick = generateSignal;
 
-buildGrid();
+next.onclick = () => {
+index = (index + 1) % traps.length;
+trapsLabel.textContent = traps[index] + ' traps';
+};
